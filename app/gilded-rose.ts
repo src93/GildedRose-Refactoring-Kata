@@ -63,26 +63,38 @@ export class GildedRose {
   }
 
   private updateDefaultQuality(item: Item) {
-    if (this.isSellInBelowZero(item.sellIn) && item.quality > this.minQuality) {
+    if (this.isQualityAboveMinQuality(item.quality)) {
+      this.reduceQuality(item);
+    }
+
+    if (this.isSellInBelowZero(item.sellIn) && this.isQualityAboveMinQuality(item.quality)) {
       this.reduceQuality(item);
     }
   }
 
   private updateAgedBrieQuality(item: Item) {
-    this.increaseQuality(item);
+    if (this.isQualityBelowMax(item.quality)) {
+      this.increaseQuality(item);
+    }
 
-    if (this.isSellInBelowZero(item.sellIn)) {
+    if (this.isSellInBelowZero(item.sellIn) && this.isQualityBelowMax(item.quality)) {
       this.increaseQuality(item);
     }
   }
 
   private updateBackstageConcertQuality(item: Item) {
+    if (this.isQualityBelowMax(item.quality)) {
+      this.increaseQuality(item);
+    }
+
     if (this.isSellInBelowEleven(item.sellIn) && this.isQualityBelowMax(item.quality)) {
       this.increaseQuality(item);
     }
+
     if (this.isSellInBelowSix(item.sellIn) && this.isQualityBelowMax(item.quality)) {
       this.increaseQuality(item);
     }
+
     if (this.isSellInBelowZero(item.sellIn)) {
       this.resetQuality(item);
     }
@@ -92,16 +104,20 @@ export class GildedRose {
     return quality < this.maxQuality;
   }
 
+  private isQualityAboveMinQuality(quality: number): boolean {
+    return quality > this.minQuality;
+  }
+
   private isSellInBelowEleven(sellIn: number): boolean {
-    return sellIn > 11;
+    return sellIn < 11;
   }
 
   private isSellInBelowSix(sellIn: number): boolean {
-    return sellIn > 6;
+    return sellIn < 6;
   }
 
   private isSellInBelowZero(sellIn: number): boolean {
-    return sellIn > 0;
+    return sellIn < 0;
   }
 
   private reduceSellIn(item: Item): void {
